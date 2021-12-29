@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		3C410001277BFE0B00AB9EEE /* FakeDataSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C410000277BFE0B00AB9EEE /* FakeDataSource.swift */; };
+		3C41FFFD277BFDC600AB9EEE /* APIService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C41FFFC277BFDC600AB9EEE /* APIService.swift */; };
 		3C5745A1276C3BB700780B56 /* DemoItem.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C5745A0276C3BB700780B56 /* DemoItem.swift */; };
 		3C5745A9276C413900780B56 /* UIColor+Ext.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3C5745A8276C413900780B56 /* UIColor+Ext.swift */; };
 		3CF9CCCF276C35FC0002EC13 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 3CF9CCCE276C35FC0002EC13 /* AppDelegate.swift */; };
@@ -19,6 +21,8 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		3C410000277BFE0B00AB9EEE /* FakeDataSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FakeDataSource.swift; sourceTree = "<group>"; };
+		3C41FFFC277BFDC600AB9EEE /* APIService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = APIService.swift; sourceTree = "<group>"; };
 		3C5745A0276C3BB700780B56 /* DemoItem.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DemoItem.swift; sourceTree = "<group>"; };
 		3C5745A8276C413900780B56 /* UIColor+Ext.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIColor+Ext.swift"; sourceTree = "<group>"; };
 		3CF9CCCB276C35FC0002EC13 /* UIKitDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = UIKitDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -43,6 +47,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		3C41FFFF277BFDCB00AB9EEE /* Networking */ = {
+			isa = PBXGroup;
+			children = (
+				3C41FFFC277BFDC600AB9EEE /* APIService.swift */,
+				3C410000277BFE0B00AB9EEE /* FakeDataSource.swift */,
+			);
+			path = Networking;
+			sourceTree = "<group>";
+		};
 		3C57459F276C3B7800780B56 /* Model */ = {
 			isa = PBXGroup;
 			children = (
@@ -54,6 +67,7 @@
 		3C5745A5276C3C1000780B56 /* Infrastructure */ = {
 			isa = PBXGroup;
 			children = (
+				3C41FFFF277BFDCB00AB9EEE /* Networking */,
 				3C5745A7276C412C00780B56 /* Extension */,
 			);
 			path = Infrastructure;
@@ -190,7 +204,9 @@
 				3CF9CCED276C3A350002EC13 /* DemoCollectionViewCell.swift in Sources */,
 				3CF9CCD3276C35FC0002EC13 /* ViewController.swift in Sources */,
 				3CF9CCCF276C35FC0002EC13 /* AppDelegate.swift in Sources */,
+				3C410001277BFE0B00AB9EEE /* FakeDataSource.swift in Sources */,
 				3C5745A1276C3BB700780B56 /* DemoItem.swift in Sources */,
+				3C41FFFD277BFDC600AB9EEE /* APIService.swift in Sources */,
 				3CF9CCD1276C35FC0002EC13 /* SceneDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

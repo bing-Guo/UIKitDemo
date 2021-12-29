@@ -1,16 +1,37 @@
 import UIKit
 
 class DemoCollectionViewController: UIViewController {
-    let dataSource: [DemoItem] = [
-        DemoItem(title: "#4F726C", color: UIColor(hex: 0x4F726C)),
-        DemoItem(title: "#F4A7B9", color: UIColor(hex: 0xF4A7B9)),
-        DemoItem(title: "#D0104C", color: UIColor(hex: 0xD0104C)),
-        DemoItem(title: "#F19483", color: UIColor(hex: 0xF19483)),
-        DemoItem(title: "#B9887D", color: UIColor(hex: 0xB9887D)),
-        DemoItem(title: "#563F2E", color: UIColor(hex: 0x563F2E)),
-        DemoItem(title: "#ADA142", color: UIColor(hex: 0xADA142)),
-        DemoItem(title: "#6E75A4", color: UIColor(hex: 0x6E75A4)),
-    ]
+    let footerHeight: CGFloat = 40
+    let perPageCount = 35
+    
+    var dataSource: [DemoItem] = []
+    var page: Int = 0
+    var isLoadingMore: Bool = false {
+        didSet {
+            if isLoadingMore {
+                indicatorView.startAnimating()
+            } else {
+                indicatorView.stopAnimating()
+            }
+        }
+    }
+    
+    /**
+     Using in footer view. To implement infinite scroll loading animation.
+     */
+    lazy var indicatorView: UIActivityIndicatorView = {
+        let indicator = UIActivityIndicatorView()
+        return indicator
+    }()
+    
+    /**
+     To implement infinite pull to refresh.
+     */
+    lazy var refreshControl: UIRefreshControl = {
+        let control = UIRefreshControl()
+        control.addTarget(self, action: #selector(refresh), for: .valueChanged)
+        return control
+    }()
     
     lazy var collectionView: UICollectionView = {
         let collectionView = UICollectionView(frame: .zero, collectionViewLayout: collectionLayout)
@@ -18,7 +39,11 @@ class DemoCollectionViewController: UIViewController {
         collectionView.delegate = self
         collectionView.dataSource = self
         collectionView.register(DemoCollectionViewCell.self, forCellWithReuseIdentifier: String(describing: DemoCollectionViewCell.self))
+        collectionView.register(UICollectionReusableView.self,
+                                forSupplementaryViewOfKind: UICollectionView.elementKindSectionFooter,
+                                withReuseIdentifier: String(describing: UICollectionReusableView.self))
         collectionView.backgroundColor = .white
+        collectionView.refreshControl = refreshControl
         return collectionView
     }()
     
@@ -34,6 +59,8 @@ class DemoCollectionViewController: UIViewController {
         super.viewDidLoad()
 
         setupUI()
+        
+        fetchData()
     }
 }
 
@@ -48,13 +75,52 @@ extension DemoCollectionViewController {
             collectionView.topAnchor.constraint(equalTo: view.topAnchor),
             collectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
             collectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor),
-            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor)
+            collectionView.bottomAnchor.constraint(equalTo: view.bottomAnchor),
         ])
     }
 }
 
 // MARK: - Actions
 extension DemoCollectionViewController {
+    func fetchData(isRefresh: Bool = false) {
+        isLoadingMore = true
+        
+        APIService.shared.fetchDemoItem(perPageCount: perPageCount, page: page) { [weak self] result in
+            guard let self = self else { return }
+            
+            self.isLoadingMore = false
+            self.refreshControl.endRefreshing()
+            
+            switch result {
+            case let .success(items):
+                if isRefresh {
+                    self.dataSource = items
+                } else {
+                    self.dataSource.append(contentsOf: items)
+                }
+                
+                self.collectionView.reloadData()
+            case .failure(_):
+                break
+            }
+        }
+    }
+    
+    /**
+     Detect whether is the end of the bottom
+     */
+    func loadNextPageIfNeeded(row: Int) {
+        let triggerRow = dataSource.count - 5
+        if (row > triggerRow) && !isLoadingMore {
+            page += 1
+            fetchData()
+        }
+    }
+    
+    @objc func refresh() {
+        page = 0
+        fetchData(isRefresh: true)
+    }
 }
 
 extension DemoCollectionViewController: UICollectionViewDelegate, UICollectionViewDataSource, UICollectionViewDelegateFlowLayout {
@@ -82,5 +148,24 @@ extension DemoCollectionViewController: UICollectionViewDelegate, UICollectionVi
         let height: CGFloat = width
         
         return CGSize(width: width, height: height)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, viewForSupplementaryElementOfKind kind: String, at indexPath: IndexPath) -> UICollectionReusableView {
+        let footer = collectionView.dequeueReusableSupplementaryView(ofKind: UICollectionView.elementKindSectionFooter,
+                                                                     withReuseIdentifier: String(describing: UICollectionReusableView.self),
+                                                                     for: indexPath)
+        
+        footer.addSubview(indicatorView)
+        indicatorView.frame = CGRect(x: 0, y: 0, width: collectionView.frame.width, height: footerHeight)
+        
+        return footer
+    }
+
+    func collectionView(_ collectionView: UICollectionView, willDisplay cell: UICollectionViewCell, forItemAt indexPath: IndexPath) {
+        loadNextPageIfNeeded(row: indexPath.row)
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, layout collectionViewLayout: UICollectionViewLayout, referenceSizeForFooterInSection section: Int) -> CGSize {
+        return CGSize(width: collectionView.frame.size.width, height: footerHeight)
     }
 }
