@@ -93,6 +93,8 @@ extension DemoCollectionViewController {
             
             switch result {
             case let .success(items):
+                guard items.count > 0 else { return }
+                
                 if isRefresh {
                     self.dataSource = items
                 } else {

@@ -32,6 +32,6 @@ class APIService {
             return []
         }
         
-        return Array(FakeDataSource.shared.dataSource[start...end])
+        return Array(FakeDataSource.shared.dataSource[start..<end])
     }
 }
